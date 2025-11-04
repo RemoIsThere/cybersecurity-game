@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Detective: Advanced Training</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #fbbf24;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .game-header h1 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            color: #fbbf24;
+        }
+
+        .timer {
+            color: #ef4444;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        .browser-window {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            overflow: hidden;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .browser-chrome {
+            background: #e5e7eb;
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            border-bottom: 1px solid #d1d5db;
+        }
+
+        .browser-buttons {
+            display: flex;
+            gap: 6px;
+        }
+
+        .browser-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #febc2e; }
+        .maximize { background: #28c840; }
+
+        .address-bar {
+            flex: 1;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid #d1d5db;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .address-bar:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .address-bar.clickable:hover {
+            transform: scale(1.02);
+        }
+
+        .lock-icon {
+            font-size: 16px;
+        }
+
+        .url-text {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #374151;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .page-content {
+            padding: 40px;
+            min-height: 600px;
+            background: #f9fafb;
+        }
+
+        .email-client {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .email-header {
+            background: #1f2937;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .email-from {
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #9ca3af;
+        }
+
+        .email-subject {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .email-body {
+            padding: 30px;
+            line-height: 1.8;
+            font-size: 15px;
+            color: #374151;
+        }
+
+        .email-body p {
+            margin-bottom: 15px;
+        }
+
+        .email-button {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            padding: 14px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 16px;
+        }
+
+        .email-button:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .email-footer {
+            background: #f3f4f6;
+            padding: 20px;
+            font-size: 12px;
+            color: #6b7280;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .detective-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .detective-panel h2 {
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+        }
+
+        .tool-button {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .tool-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tool-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .tool-button.used {
+            background: #10b981;
+        }
+
+        .clue-item {
+            background: #fef3c7;
+            border-left: 4px solid #fbbf24;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .clue-item strong {
+            color: #92400e;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .verdict-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .verdict-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .legit-btn {
+            background: #10b981;
+            color: white;
+        }
+
+        .legit-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+
+        .phishing-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .phishing-btn:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: scaleIn 0.3s ease;
+            text-align: center;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .modal-content.correct h2 {
+            color: #10b981;
+        }
+
+        .modal-content.wrong h2 {
+            color: #ef4444;
+        }
+
+        .modal-content p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+
+        .explanation-box {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .explanation-box h3 {
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .explanation-box ul {
+            list-style-position: inside;
+            color: #374151;
+        }
+
+        .explanation-box li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .next-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            background: #2563eb;
+        }
+
+        .hint-text {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #3b82f6);
+            transition: width 0.5s ease;
+        }
+
+        .scenario-badge {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .clickable-element {
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .clickable-element:hover {
+            background: rgba(59, 130, 246, 0.1);
+            outline: 2px dashed #3b82f6;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1500;
+            animation: slideInRight 0.5s ease;
+            border-left: 5px solid #fbbf24;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .level-indicator {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-header">
+        <h1>🕵️ Phishing Detective: Advanced Training</h1>
+        <div class="game-stats">
+            <div class="stat-item">
+                <span>Score:</span>
+                <span class="stat-value" id="score">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Streak:</span>
+                <span class="stat-value" id="streak">0</span>
+                <span>🔥</span>
+            </div>
+            <div class="stat-item">
+                <span>Time:</span>
+                <span class="stat-value timer" id="timer">0s</span>
+            </div>
+            <div class="stat-item level-indicator">
+                <span id="level">Level 1</span>
+            </div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="browser-window">
+            <div class="browser-chrome">
+                <div class="browser-buttons">
+                    <div class="browser-button close"></div>
+                    <div class="browser-button minimize"></div>
+                    <div class="browser-button maximize"></div>
+                </div>
+                <div class="address-bar clickable-element" id="addressBar">
+                    <span class="lock-icon" id="lockIcon">🔓</span>
+                    <span class="url-text" id="urlText">http://secure-paypaI-verification.com/urgent</span>
+                </div>
+                <button class="refresh-btn" id="refreshBtn">⟳</button>
+            </div>
+
+            <div class="page-content" id="pageContent">
+                <!-- Scenario content will be injected here -->
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="detective-panel">
+                <h2>🔍 Detective Tools</h2>
+                <button class="tool-button" id="urlAnalyzer">
+                    <span>🔗</span>
+                    <span>Analyze URL</span>
+                </button>
+                <button class="tool-button" id="senderChecker">
+                    <span>📧</span>
+                    <span>Check Sender</span>
+                </button>
+                <button class="tool-button" id="linkInspector">
+                    <span>🔎</span>
+                    <span>Inspect Links</span>
+                </button>
+                <button class="tool-button" id="grammarCheck">
+                    <span>✍️</span>
+                    <span>Grammar Analysis</span>
+                </button>
+                <button class="tool-button" id="urgencyDetector">
+                    <span>⚠️</span>
+                    <span>Urgency Detector</span>
+                </button>
+                <p class="hint-text">💡 Use detective tools to gather clues before making your verdict!</p>
+            </div>
+
+            <div class="detective-panel">
+                <h2>📋 Clues Found</h2>
+                <div id="cluesContainer">
+                    <p style="color: #9ca3af; font-size: 14px;">No clues yet. Use detective tools to investigate!</p>
+                </div>
+            </div>
+
+            <div class="detective-panel">
+                <h2>⚖️ Your Verdict</h2>
+                <div class="verdict-buttons">
+                    <button class="verdict-btn legit-btn" id="legitBtn">✅ Legitimate</button>
+                    <button class="verdict-btn phishing-btn" id="phishingBtn">🚨 Phishing</button>
+                </div>
+                <p class="hint-text">Found at least 2 clues? Make your call!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="resultModal">
+        <div class="modal-content" id="modalContent">
+            <!-- Result content will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let currentScenario = 0;
+        let score = 0;
+        let streak = 0;
+        let timeElapsed = 0;
+        let timerInterval = null;
+        let cluesFound = new Set();
+        let toolsUsed = new Set();
+
+        // Scenarios database
+        const scenarios = [
+            {
+                type: 'email',
+                isPhishing: true,
+                difficulty: 'easy',
+                url: 'http://secure-paypaI-verification.com/urgent',
+                lockIcon: '🔓',
+                from: 'security@paypa1-alerts.com',
+                subject: 'URGENT: Your Account Has Been Compromised!',
+                body: `
+                    <div class="scenario-badge">Scenario 1: Email Phishing</div>
+                    <div class="email-from">From: security@paypa1-alerts.com</div>
+                    <div class="email-subject">URGENT: Your Account Has Been Compromised!</div>
+                    <div class="email-body">
+                        <p>Dear Valued Customer,</p>
+                        <p class="clickable-element" data-clue="urgency">We have detected unusual activity on your PayPal account. Your account will be permanently suspended within 24 hours unless you verify your identity immediately.</p>
+                        <p class="clickable-element" data-clue="grammar">We has noticed multiple failed login attempts from unknown locations. This is serious security risk that require immediate attention.</p>
+                        <p>Click the button below to verify your account now:</p>
+                        <button class="email-button clickable-element" data-clue="link">VERIFY ACCOUNT NOW</button>
+                        <p>If you do not verify within 24 hours, all funds will be frozen and account will be deleted permanently.</p>
+                        <p class="clickable-element" data-clue="urgency">Act fast to protect your money!</p>
+                    </div>
+                    <div class="email-footer">
+                        <p>PayPal Security Team<br>
+                        © 2025 PayPal Inc. All rights reserved.<br>
+                        <span class="clickable-element" data-clue="sender">Sent from: paypa1-alerts.com</span></p>
+                    </div>
+                `,
+                clues: {
+                    url: '🔗 URL Analysis: Domain is "paypaI-verification.com" (capital i instead of L). Uses HTTP instead of HTTPS. Real PayPal uses "paypal.com".',
+                    sender: '📧 Sender Check: Email from "paypa1-alerts.com" (number 1 instead of L). Legitimate PayPal emails come from "@paypal.com" domain only.',
+                    link: '🔎 Link Inspection: Button leads to "paypa1-verify.com/steal-data.php" - clearly malicious URL. Real PayPal never asks for verification via email links.',
+                    grammar: '✍️ Grammar Errors: "We has noticed" (incorrect verb), "serious security risk that require" (verb agreement error). Professional companies have quality control.',
+                    urgency: '⚠️ Urgency Tactics: Multiple threats ("24 hours", "permanently suspended", "act fast"). Creates panic to bypass rational thinking.'
+                },
+                explanation: 'This is a classic phishing email with multiple red flags: fake domain name using character substitution (1 for l, I for l), no HTTPS, grammar errors, and artificial urgency to pressure victims into acting without thinking.'
+            },
+            {
+                type: 'website',
+                isPhishing: true,
+                difficulty: 'medium',
+                url: 'https://amazon-security-alert.co/verify',
+                lockIcon: '🔒',
+                body: `
+                    <div class="scenario-badge">Scenario 2: Fake Website</div>
+                    <div style="background: #232f3e; padding: 20px; margin: -40px -40px 30px -40px;">
+                        <div style="color: white; font-size: 28px; font-weight: bold;">
+                            <span style="color: #ff9900;">amazon</span><span style="font-size: 20px;">.co</span>
+                        </div>
+                    </div>
+                    <div style="background: #fff3cd; padding: 20px; border-left: 5px solid #ffc107; margin-bottom: 30px;" class="clickable-element" data-clue="urgency">
+                        <h2 style="color: #dc3545; margin-bottom: 10px;">⚠️ Security Alert</h2>
+                        <p style="font-size: 16px;">We've detected suspicious activity on your account. Please verify your payment information to continue using Amazon services.</p>
+                    </div>
+                    <div style="background: white; padding: 30px; border: 1px solid #ddd; border-radius: 8px;">
+                        <h3 style="margin-bottom: 20px;">Verify Your Account</h3>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" placeholder="Email Address" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <input type="password" placeholder="Password" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                        </div>
+                        <div style="margin-bottom: 15px;" class="clickable-element" data-clue="link">
+                            <input type="text" placeholder="Credit Card Number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <input type="text" placeholder="CVV" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                        </div>
+                        <button class="email-button" style="width: 100%; background: #ff9900;">Continue to Amazon</button>
+                    </div>
+                    <div style="margin-top: 30px; font-size: 12px; color: #666; text-align: center;" class="clickable-element" data-clue="grammar">
+                        <p>This verification is necessary for to protect your account from the unauthorized access. We takes security very serious.</p>
+                    </div>
+                `,
+                clues: {
+                    url: '🔗 URL Analysis: Domain is "amazon-security-alert.co" instead of "amazon.com". The ".co" extension is suspicious for a US company. Real Amazon never uses hyphens.',
+                    sender: '📧 Certificate Check: While it has HTTPS, the SSL certificate is issued to "amazon-security-alert.co" not Amazon.com. Anyone can get HTTPS for fake domains.',
+                    link: '🔎 Form Analysis: Legitimate sites NEVER ask for full credit card details + CVV + password together on one page. This is credential harvesting.',
+                    grammar: '✍️ Grammar Errors: "for to protect" (incorrect preposition), "We takes" (verb error), "very serious" (missing adverb). Amazon has professional copy.',
+                    urgency: '⚠️ Fear Tactics: "Suspicious activity" alert with immediate verification demand. Creates panic to make you act without thinking critically.'
+                },
+                explanation: 'This sophisticated phishing site uses HTTPS (green padlock) to appear legitimate, but the domain name is fake. Real Amazon never asks for complete payment details + password on verification pages. The HTTPS only means the connection to the FAKE site is encrypted.'
+            },
+            {
+                type: 'email',
+                isPhishing: false,
+                difficulty: 'medium',
+                url: 'https://mail.google.com',
+                lockIcon: '🔒',
+                body: `
+                    <div class="scenario-badge">Scenario 3: Legitimate Email</div>
+                    <div class="email-from">From: no-reply@accounts.google.com</div>
+                    <div class="email-subject">Security alert: New device signed in to your Google Account</div>
+                    <div class="email-body">
+                        <p>Hi there,</p>
+                        <p>A new Windows device just signed in to your Google Account example@gmail.com.</p>
+                        <p><strong>Device details:</strong></p>
+                        <p>• Windows 10<br>• Chrome browser<br>• Location: New York, USA<br>• Time: November 4, 2025, 2:30 PM EST</p>
+                        <p>If this was you, you can disregard this email.</p>
+                        <p>If this wasn't you, someone else might be accessing your account. Please review your account activity and secure your account.</p>
+                        <a href="#" style="color: #1a73e8; text-decoration: none;">Review your account activity</a>
+                    </div>
+                    <div class="email-footer">
+                        <p>This email was sent to inform you of important changes to your Google Account and services.<br>
+                        © 2025 Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA</p>
+                    </div>
+                `,
+                clues: {
+                    url: '🔗 URL Analysis: Legitimate "mail.google.com" domain. Correct HTTPS with valid SSL certificate from Google.',
+                    sender: '📧 Sender Verification: From "no-reply@accounts.google.com" - authentic Google domain with proper email authentication (SPF/DKIM).',
+                    link: '🔎 Link Check: Links point to legitimate "myaccount.google.com" domains. No redirect tricks or suspicious URLs.',
+                    grammar: '✍️ Writing Quality: Professional, clear writing with no grammar errors. Proper formatting and structure throughout.',
+                    urgency: '⚠️ Tone Analysis: Informative without pressure. Offers options: "disregard if it was you" OR "review if not". No threats or ultimatums.'
+                },
+                explanation: 'This is a LEGITIMATE security notification from Google. Key indicators: correct domain (accounts.google.com), professional writing, no urgent demands, provides account details, gives you choices. Real security alerts inform without pressuring.'
+            },
+            {
+                type: 'email',
+                isPhishing: true,
+                difficulty: 'hard',
+                url: 'https://microsoft-account-security.com',
+                lockIcon: '🔒',
+                body: `
+                    <div class="scenario-badge">Scenario 4: Advanced Phishing</div>
+                    <div class="email-from">From: account-security-noreply@microsoft.com.verification-required.com</div>
+                    <div class="email-subject">Microsoft Account: Unusual sign-in activity</div>
+                    <div class="email-body">
+                        <div style="background: #0078d4; color: white; padding: 20px; margin: -30px -30px 20px -30px;">
+                            <h2 style="margin: 0;">Microsoft Account</h2>
+                        </div>
+                        <p>Hello,</p>
+                        <p>We detected an unusual sign-in to your Microsoft account from:</p>
+                        <p style="background: #f3f4f6; padding: 15px; border-radius: 6px;">
+                            <strong>Location:</strong> Moscow, Russia<br>
+                            <strong>Device:</strong> Unknown Android device<br>
+                            <strong>Time:</strong> 3:47 AM (your local time)
+                        </p>
+                        <p class="clickable-element" data-clue="urgency">If this wasn't you, your account may be compromised. We recommend securing your account immediately to prevent unauthorized access.</p>
+                        <p>Click below to review recent activity and secure your account:</p>
+                        <button class="email-button" style="background: #0078d4;">Review Account Activity</button>
+                        <p style="font-size: 13px; color: #666; margin-top: 20px;">If you don't recognize this activity, please change your password immediately and enable two-factor authentication.</p>
+                    </div>
+                    <div class="email-footer" class="clickable-element" data-clue="sender">
+                        <p>Microsoft Account Team<br>
+                        Microsoft Corporation, One Microsoft Way, Redmond, WA 98052<br>
+                        <span style="font-size: 11px;">Sent from: microsoft.com.verification-required.com</span></p>
+                    </div>
+                `,
+                clues: {
+                    url: '🔗 URL Analysis: Domain "microsoft-account-security.com" is NOT Microsoft. Real Microsoft uses "microsoft.com" or "account.microsoft.com". Close but fake.',
+                    sender: '📧 Sender Analysis: Email from "account-security-noreply@microsoft.com.verification-required.com" - looks legit but ".verification-required.com" is the actual domain. Subdomain trick!',
+                    link: '🔎 Link Inspection: Button leads to "microsoft-account-security.com/login" not real Microsoft domain. Subdomain deception technique.',
+                    grammar: '✍️ Quality Check: Actually well-written with no obvious errors. Advanced phishing uses better copywriting to appear legitimate.',
+                    urgency: '⚠️ Pressure Tactics: "May be compromised", "immediately", "prevent unauthorized access" - creates fear. Real alerts are calmer and more informative.'
+                },
+                explanation: 'ADVANCED PHISHING using subdomain tricks! The sender appears to be @microsoft.com but actually ends in ".verification-required.com". This tricks people by putting legitimate brand names before the real domain. Always check the LAST part of the domain before the TLD (.com).'
+            },
+            {
+                type: 'website',
+                isPhishing: false,
+                difficulty: 'easy',
+                url: 'https://www.apple.com/support',
+                lockIcon: '🔒',
+                body: `
+                    <div class="scenario-badge">Scenario 5: Legitimate Support</div>
+                    <div style="background: #f5f5f7; padding: 30px; margin: -40px -40px 20px -40px; text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 10px;">🍎</div>
+                        <h2 style="color: #1d1d1f; margin-bottom: 10px;">Apple Support</h2>
+                        <p style="color: #86868b;">Get help with your Apple products</p>
+                    </div>
+                    <div style="background: white; padding: 30px; border: 1px solid #d2d2d7; border-radius: 12px; margin-bottom: 20px;">
+                        <h3 style="color: #1d1d1f; margin-bottom: 15px;">Account Security Recommendations</h3>
+                        <p style="line-height: 1.8; color: #1d1d1f;">Your Apple ID is the key to all Apple services. Here are some ways to keep it secure:</p>
+                        <ul style="margin: 20px 0; padding-left: 20px; color: #1d1d1f; line-height: 2;">
+                            <li>Use a strong, unique password</li>
+                            <li>Enable two-factor authentication</li>
+                            <li>Keep your recovery information up to date</li>
+                            <li>Don't share your password with anyone</li>
+                        </ul>
+                        <p style="background: #f5f5f7; padding: 15px; border-radius: 8px; color: #1d1d1f;">
+                            <strong>Important:</strong> Apple will never ask you to provide your password, verification codes, or other account security details over email or phone unless you initiated the contact.
+                        </p>
+                    </div>
+                    <div style="text-align: center;">
+                        <a href="#" style="display: inline-block; background: #0071e3; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 500;">Manage Your Apple ID</a>
+                    </div>
+                `,
+                clues: {
+                    url: '🔗 URL Analysis: Perfect - "www.apple.com/support" is the official Apple domain with valid SSL certificate directly from Apple Inc.',
+                    sender: '📧 Domain Check: Official apple.com domain with all security headers properly configured. Extended validation certificate confirmed.',
+                    link: '🔎 Link Analysis: All links point to legitimate apple.com subdomains. No external redirects or suspicious parameters.',
+                    grammar: '✍️ Content Quality: Impeccable professional writing. Clear, helpful information without any pressure or threats.',
+                    urgency: '⚠️ Communication Style: Educational and helpful. No urgency, threats, or demands. Empowers users with information rather than creating panic.'
+                },
+                explanation: 'LEGITIMATE Apple support page. Key indicators: official apple.com domain, educational content, no pressure tactics, clear security information, professional presentation. Notice how real companies EDUCATE rather than threaten.'
+            }
+        ];
+
+        // Initialize game
+        function initGame() {
+            loadScenario(currentScenario);
+            startTimer();
+            setupEventListeners();
+        }
+
+        // Load scenario
+        function loadScenario(index) {
+            const scenario = scenarios[index];
+            document.getElementById('urlText').textContent = scenario.url;
+            document.getElementById('lockIcon').textContent = scenario.lockIcon;
+            document.getElementById('pageContent').innerHTML = scenario.body;
+            document.getElementById('level').textContent = `Scenario ${index + 1}/${scenarios.length}`;
+            
+            // Update progress
+            const progress = ((index) / scenarios.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Reset clues and tools
+            cluesFound.clear();
+            toolsUsed.clear();
+            document.getElementById('cluesContainer').innerHTML = '<p style="color: #9ca3af; font-size: 14px;">No clues yet. Use detective tools to investigate!</p>';
+            
+            // Reset tool buttons
+            document.querySelectorAll('.tool-button').forEach(btn => {
+                btn.classList.remove('used');
+                btn.disabled = false;
+            });
+
+            // Add click listeners to clickable elements
+            setTimeout(() => {
+                document.querySelectorAll('.clickable-element').forEach(el => {
+                    el.addEventListener('click', function() {
+                        const clueType = this.getAttribute('data-clue');
+                        if (clueType) {
+                            revealClue(clueType);
+                        }
+                    });
+                });
+            }, 100);
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('urlAnalyzer').addEventListener('click', () => useTool('url'));
+            document.getElementById('senderChecker').addEventListener('click', () => useTool('sender'));
+            document.getElementById('linkInspector').addEventListener('click', () => useTool('link'));
+            document.getElementById('grammarCheck').addEventListener('click', () => useTool('grammar'));
+            document.getElementById('urgencyDetector').addEventListener('click', () => useTool('urgency'));
+            
+            document.getElementById('legitBtn').addEventListener('click', () => makeVerdict(false));
+            document.getElementById('phishingBtn').addEventListener('click', () => makeVerdict(true));
+            
+            document.getElementById('addressBar').addEventListener('click', () => useTool('url'));
+        }
+
+        // Use detective tool
+        function useTool(toolType) {
+            if (toolsUsed.has(toolType)) return;
+            
+            const scenario = scenarios[currentScenario];
+            const clueText = scenario.clues[toolType];
+            
+            if (clueText) {
+                revealClue(toolType, clueText);
+                toolsUsed.add(toolType);
+                
+                // Mark button as used
+                const buttonMap = {
+                    'url': 'urlAnalyzer',
+                    'sender': 'senderChecker',
+                    'link': 'linkInspector',
+                    'grammar': 'grammarCheck',
+                    'urgency': 'urgencyDetector'
+                };
+                
+                const button = document.getElementById(buttonMap[toolType]);
+                if (button) {
+                    button.classList.add('used');
+                    button.disabled = true;
+                }
+            }
+        }
+
+        // Reveal clue
+        function revealClue(clueType, clueText) {
+            if (cluesFound.has(clueType)) return;
+            
+            const scenario = scenarios[currentScenario];
+            const text = clueText || scenario.clues[clueType];
+            
+            if (!text) return;
+            
+            cluesFound.add(clueType);
+            
+            const container = document.getElementById('cluesContainer');
+            if (cluesFound.size === 1) {
+                container.innerHTML = '';
+            }
+            
+            const clueDiv = document.createElement('div');
+            clueDiv.className = 'clue-item';
+            clueDiv.innerHTML = `<strong>Clue #${cluesFound.size}</strong>${text}`;
+            container.appendChild(clueDiv);
+            
+            // Show achievement for first clue
+            if (cluesFound.size === 1) {
+                showAchievement('🔍 First Clue Found!');
+            }
+            
+            // Bonus for finding all clues
+            if (cluesFound.size === Object.keys(scenario.clues).length) {
+                showAchievement('🏆 Master Detective - All Clues Found!');
+                score += 50;
+                updateScore();
+            }
+        }
+
+        // Make verdict
+        function makeVerdict(userSaysPhishing) {
+            const scenario = scenarios[currentScenario];
+            const correct = userSaysPhishing === scenario.isPhishing;
+            
+            // Calculate points
+            let points = 0;
+            if (correct) {
+                points = 100;
+                // Bonus for finding clues
+                points += cluesFound.size * 20;
+                // Speed bonus (under 30 seconds)
+                if (timeElapsed < 30) {
+                    points += 50;
+                }
+                // Streak bonus
+                streak++;
+                if (streak > 1) {
+                    points += streak * 10;
+                }
+                score += points;
+            } else {
+                streak = 0;
+            }
+            
+            updateScore();
+            showResult(correct, points);
+        }
+
+        // Show result modal
+        function showResult(correct, points) {
+            const scenario = scenarios[currentScenario];
+            const modal = document.getElementById('resultModal');
+            const content = document.getElementById('modalContent');
+            
+            content.className = 'modal-content ' + (correct ? 'correct' : 'wrong');
+            
+            let html = '';
+            if (correct) {
+                html = `
+                    <h2>🎉 Correct!</h2>
+                    <p style="font-size: 20px; font-weight: bold; color: #10b981;">+${points} points</p>
+                    <p>You correctly identified this as ${scenario.isPhishing ? 'PHISHING' : 'LEGITIMATE'}!</p>
+                `;
+            } else {
+                html = `
+                    <h2>❌ Incorrect</h2>
+                    <p style="font-size: 18px; color: #ef4444;">This was actually ${scenario.isPhishing ? 'PHISHING' : 'LEGITIMATE'}</p>
+                    <p>Don't worry - learning from mistakes makes you stronger!</p>
+                `;
+            }
+            
+            html += `
+                <div class="explanation-box">
+                    <h3>📚 Explanation</h3>
+                    <p>${scenario.explanation}</p>
+                    <h3 style="margin-top: 20px;">🔍 Key Red Flags:</h3>
+                    <ul>
+            `;
+            
+            for (let clue in scenario.clues) {
+                html += `<li>${scenario.clues[clue]}</li>`;
+            }
+            
+            html += `
+                    </ul>
+                </div>
+                <p><strong>Clues Found:</strong> ${cluesFound.size}/${Object.keys(scenario.clues).length}</p>
+                <p><strong>Time Taken:</strong> ${timeElapsed} seconds</p>
+            `;
+            
+            if (currentScenario < scenarios.length - 1) {
+                html += `<button class="next-btn" onclick="nextScenario()">Next Scenario →</button>`;
+            } else {
+                html += `<button class="next-btn" onclick="endGame()">View Final Score</button>`;
+            }
+            
+            content.innerHTML = html;
+            modal.classList.add('show');
+        }
+
+        // Next scenario
+        function nextScenario() {
+            document.getElementById('resultModal').classList.remove('show');
+            currentScenario++;
+            timeElapsed = 0;
+            loadScenario(currentScenario);
+        }
+
+        // End game
+        function endGame() {
+            clearInterval(timerInterval);
+            const modal = document.getElementById('resultModal');
+            const content = document.getElementById('modalContent');
+            
+            const grade = score >= 800 ? 'S' : score >= 600 ? 'A' : score >= 400 ? 'B' : score >= 200 ? 'C' : 'D';
+            const gradeColors = { S: '#fbbf24', A: '#10b981', B: '#3b82f6', C: '#f59e0b', D: '#ef4444' };
+            
+            content.className = 'modal-content correct';
+            content.innerHTML = `
+                <h2 style="font-size: 48px; margin-bottom: 20px;">Game Complete!</h2>
+                <div style="font-size: 120px; color: ${gradeColors[grade]}; font-weight: bold; margin: 20px 0;">${grade}</div>
+                <p style="font-size: 32px; font-weight: bold; color: #667eea;">Final Score: ${score}</p>
+                <p style="font-size: 20px; margin: 20px 0;">Max Streak: ${streak > 0 ? streak : 'N/A'} 🔥</p>
+                
+                <div class="explanation-box">
+                    <h3>🏆 Performance Summary</h3>
+                    <p><strong>Grade S:</strong> Master Detective (800+ points)</p>
+                    <p><strong>Grade A:</strong> Expert Analyst (600-799 points)</p>
+                    <p><strong>Grade B:</strong> Skilled Investigator (400-599 points)</p>
+                    <p><strong>Grade C:</strong> Learning Detective (200-399 points)</p>
+                    <p><strong>Grade D:</strong> Needs More Training (0-199 points)</p>
+                </div>
+                
+                <p style="margin-top: 30px; font-size: 16px; line-height: 1.8;">
+                    ${score >= 600 ? 'Outstanding work! You have excellent phishing detection skills.' : 
+                      score >= 400 ? 'Good job! Keep practicing to sharpen your skills.' :
+                      'Keep learning! Review the explanations to improve your detection abilities.'}
+                </p>
+                
+                <button class="next-btn" onclick="location.reload()">🔄 Play Again</button>
+            `;
+            
+            modal.classList.add('show');
+        }
+
+        // Timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeElapsed++;
+                document.getElementById('timer').textContent = timeElapsed + 's';
+            }, 1000);
+        }
+
+        // Update score display
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        // Show achievement popup
+        function showAchievement(text) {
+            const popup = document.createElement('div');
+            popup.className = 'achievement-popup';
+            popup.innerHTML = `<strong>🎯 Achievement!</strong><p>${text}</p>`;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => {
+                popup.style.animation = 'slideInRight 0.5s ease reverse';
+                setTimeout(() => popup.remove(), 500);
+            }, 3000);
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
